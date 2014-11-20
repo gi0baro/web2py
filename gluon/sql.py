@@ -10,12 +10,15 @@
 Just for backward compatibility
 --------------------------------
 """
-__all__ = ['DAL', 'Field', 'DRIVERS']
+__all__ = ['DAL', 'Field']
 
 from dal import DAL, Field, SQLCustomType
-from dal.adapters.base import BaseAdapter, DRIVERS
-from dal.objects import Table, Query, Set, Expression, Row, Rows
-from dal.helpers.classes import SQLALL
+#: DRIVERS should be accessible only from DAL instance.
+#  how to deal with backward compatibility?
+#from dal.adapters.base import DRIVERS
+from pydal.base import BaseAdapter
+from pydal.objects import Table, Query, Set, Expression, Row, Rows
+from pydal.helpers.classes import SQLALL
 
 SQLDB = DAL
 GQLDB = DAL

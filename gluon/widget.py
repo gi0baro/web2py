@@ -1086,9 +1086,10 @@ def start(cron=True):
         print ProgramAuthor
         print ProgramVersion
 
-    from dal.adapters.base import DRIVERS
-    if not options.nobanner:
-        print 'Database drivers available: %s' % ', '.join(DRIVERS)
+    #: !DRIVERS should be accessed only from DAL instance!
+    #from dal.adapters.base import DRIVERS
+    #if not options.nobanner:
+    #    print 'Database drivers available: %s' % ', '.join(DRIVERS)
 
     # ## if -L load options from options.config file
     if options.config:

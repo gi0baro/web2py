@@ -27,11 +27,11 @@ from gluon.html import FORM, INPUT, LABEL, OPTION, SELECT, COL, COLGROUP
 from gluon.html import TABLE, THEAD, TBODY, TR, TD, TH, STYLE, SCRIPT
 from gluon.html import URL, FIELDSET, P, DEFAULT_PASSWORD_DISPLAY
 from gluon.dal import DAL, Field
-from gluon.dal.base import DEFAULT
-from gluon.dal.objects import Table, Row, Expression
-from gluon.dal.adapters.base import CALLABLETYPES
-from gluon.dal.helpers.methods import smart_query, bar_encode, sqlhtml_validators
-from gluon.dal.helpers.classes import Reference, SQLCustomType
+from pydal.base import DEFAULT
+from pydal.objects import Table, Row, Expression
+from pydal.adapters.base import CALLABLETYPES
+from pydal.helpers.methods import smart_query, bar_encode, sqlhtml_validators
+from pydal.helpers.classes import Reference, SQLCustomType
 from gluon.storage import Storage
 from gluon.utils import md5_hash
 from gluon.validators import IS_EMPTY_OR, IS_NOT_EMPTY, IS_LIST_OF, IS_DATE
@@ -1842,7 +1842,7 @@ class SQLFORM(FORM):
                     value_input = SQLFORM.widgets.integer.widget(field, field.default, _id=_id,_class='form-control')
                 else:
                     value_input = INPUT(
-                        _type='text', _id=_id, 
+                        _type='text', _id=_id,
                         _class=(field.type or '')+' form-control')
 
                 new_button = INPUT(
