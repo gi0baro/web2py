@@ -87,15 +87,14 @@ class PostgreSQLAdapter(BaseAdapter):
 
     REGEX_URI = re.compile('^(?P<user>[^:@]+)(\:(?P<password>[^@]*))?@(?P<host>[^\:@]+)(\:(?P<port>[0-9]+))?/(?P<db>[^\?]+)(\?sslmode=(?P<sslmode>.+))?$')
 
-    def __init__(self, db,uri, pool_size=0, folder=None, db_codec ='UTF-8',
+    def __init__(self,db,uri,pool_size=0,folder=None,db_codec ='UTF-8',
                  credential_decoder=IDENTITY, driver_args={},
                  adapter_args={}, do_connect=True, srid=4326,
                  after_connection=None):
         self.db = db
-        self.dbengine="postgres"
+        self.dbengine = "postgres"
         self.uri = uri
-        if do_connect:
-            self.find_driver(adapter_args, uri)
+        if do_connect: self.find_driver(adapter_args,uri)
         self.pool_size = pool_size
         self.folder = folder
         self.db_codec = db_codec
@@ -103,8 +102,7 @@ class PostgreSQLAdapter(BaseAdapter):
         self.srid = srid
         self.find_or_make_work_folder()
         self._last_insert = None # for INSERT ... RETURNING ID
-        self.TRUE_exp = 'TRUE'
-        self.FALSE_exp = 'FALSE'
+
         ruri = uri.split('://',1)[1]
         m = self.REGEX_URI.match(ruri)
         if not m:
@@ -123,30 +121,27 @@ class PostgreSQLAdapter(BaseAdapter):
             raise SyntaxError('Database name required')
         port = m.group('port') or '5432'
         sslmode = m.group('sslmode')
-        driver_args['database'] = db
-        driver_args['user'] = user
-        driver_args['host'] = host
-        driver_args['port'] = int(port)
-        driver_args['password'] = password
-
         if sslmode:
-            driver_args['sslmode'] = sslmode
-
+            msg = ("dbname='%s' user='%s' host='%s' "
+                   "port=%s password='%s' sslmode='%s'") \
+                   % (db, user, host, port, password, sslmode)
+        else:
+            msg = ("dbname='%s' user='%s' host='%s' "
+                   "port=%s password='%s'") \
+                   % (db, user, host, port, password)
         # choose diver according uri
         if self.driver:
             self.__version__ = "%s %s" % (self.driver.__name__,
                                           self.driver.__version__)
         else:
             self.__version__ = None
-        def connector(driver_args=driver_args):
-            return self.driver.connect(**driver_args)
-        self.connector=connector
-        if do_connect:
-            self.reconnect()
+        def connector(msg=msg,driver_args=driver_args):
+            return self.driver.connect(msg,**driver_args)
+        self.connector = connector
+        if do_connect: self.reconnect()
 
     def after_connection(self):
-        #self.connection.set_client_encoding('UTF8') #pg8000 doesn't have a native set_client_encoding
-        self.execute("SET CLIENT_ENCODING TO 'UTF8'")
+        self.connection.set_client_encoding('UTF8')
         self.execute("SET standard_conforming_strings=on;")
         self.try_json()
 
@@ -174,9 +169,14 @@ class PostgreSQLAdapter(BaseAdapter):
             return int(self.cursor.fetchone()[0])
 
     def try_json(self):
-        if self.driver_name == "pg8000":
-            supports_json = self.connection._server_version >= "9.2.0"
-        elif (self.driver_name == "psycopg2" and
+        # check JSON data type support
+        # (to be added to after_connection)
+
+        # until pg8000 supports json, leave this commented
+        #if self.driver_name == "pg8000":
+        #    supports_json = self.connection.server_version >= "9.2.0"
+
+        if (self.driver_name == "psycopg2" and
             self.driver.__version__ >= "2.0.12"):
             supports_json = self.connection.server_version >= 90200
         elif self.driver_name == "zxJDBC":
@@ -202,7 +202,7 @@ class PostgreSQLAdapter(BaseAdapter):
 
     def ILIKE(self,first,second):
         args = (self.expand(first), self.expand(second,'string'))
-        if not first.type in ('string', 'text', 'json', 'list:string'):
+        if not first.type in ('string', 'text', 'json'):
             return '(%s LIKE %s)' % (
                 self.CAST(args[0], 'CHAR(%s)' % first.length), args[1])
         else:

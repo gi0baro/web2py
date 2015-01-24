@@ -76,8 +76,7 @@ class BaseAdapter(ConnectionPool):
     dbpath = None
     folder = None
     connector = lambda *args, **kwargs: None  # __init__ should override this
-    TRUE_exp = '1'
-    FALSE_exp = '0'
+
     TRUE = 'T'
     FALSE = 'F'
     T_SEP = ' '
@@ -910,7 +909,7 @@ class BaseAdapter(ConnectionPool):
             return ','.join(self.represent(item,field_type) \
                                 for item in expression)
         elif isinstance(expression, bool):
-            return self.db._adapter.TRUE_exp if expression else self.db._adapter.FALSE_exp
+            return '1' if expression else '0'
         else:
             return str(expression)
 
@@ -1038,6 +1037,11 @@ class BaseAdapter(ConnectionPool):
         tablenames = tables(query)
         tablenames_for_common_filters = tablenames
         for field in fields:
+            if isinstance(field, basestring):
+                m = self.REGEX_TABLE_DOT_FIELD.match(field)
+                if m:
+                    tn,fn = m.groups()
+                    field = self.db[tn][fn]
             for tablename in tables(field):
                 if not tablename in tablenames:
                     tablenames.append(tablename)

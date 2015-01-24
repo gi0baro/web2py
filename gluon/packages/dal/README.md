@@ -6,10 +6,8 @@ It dynamically generates the SQL in real time using the specified dialect for th
 
 pyDAL comes from the original web2py's DAL, with the aim of being wide-compatible. pyDAL doesn't require web2py and can be used in any Python context.
 
-[![pip version](https://img.shields.io/pypi/v/pydal.svg?style=flat-square)](https://pypi.python.org/pypi/pydal) 
-[![Build Status](https://img.shields.io/travis/web2py/pydal.svg?style=flat-square)](https://travis-ci.org/web2py/pydal)
-[![Coverage Status](https://img.shields.io/coveralls/web2py/pydal.svg?style=flat-square)](https://coveralls.io/r/web2py/pydal)
-[![API Docs Status](https://readthedocs.org/projects/pydal/badge/?version=latest&style=flat-square)](http://pydal.rtfd.org/)
+[![pip version](https://img.shields.io/pypi/v/pydal.svg?style=flat)](https://pypi.python.org/pypi/pydal) 
+[![Build Status](https://img.shields.io/travis/web2py/pydal.svg?style=flat)](https://travis-ci.org/web2py/pydal)
 
 ## Installation
 
@@ -24,12 +22,11 @@ Here is a quick example:
     >>> from pydal import DAL, Field
     >>> db = DAL('sqlite://storage.db')
     >>> db.define_table('thing',Field('name'))
-    >>> db.thing.insert(name='Chair')
+    >>> db.thing.insert(name="Chair')
     >>> query = db.thing.name.startswith('C')
     >>> rows = db(query).select()
     >>> print rows[0].name
     Chair
-    >>> db.commit()
 
 The complete documentation is available on http://www.web2py.com/books/default/chapter/29/06/the-database-abstraction-layer
 

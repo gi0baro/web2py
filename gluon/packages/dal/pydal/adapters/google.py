@@ -505,7 +505,7 @@ class GoogleDatastoreAdapter(NoSQLAdapter):
                     db['_lastcursor'] = cursor
             else:
                 # if a limit is not specified, always return an iterator
-                items = query
+                rows = query
 
         return (items, tablename, projection or db[tablename].fields)
 
